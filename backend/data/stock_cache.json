@@ -1,0 +1,122 @@
+[
+  {
+    "symbol": "AAPL",
+    "name": "Apple Inc.",
+    "pe_ratio": 35.370842,
+    "roe": 136.52,
+    "market_cap": 3352782700544,
+    "dividend_yield": 45.0,
+    "beta": 1.178,
+    "sector": "Technology",
+    "country": "United States",
+    "industry": "Consumer Electronics"
+  },
+  {
+    "symbol": "MSFT",
+    "name": "Microsoft Corporation",
+    "pe_ratio": 30.772142,
+    "roe": 34.291,
+    "market_cap": 2841192693760,
+    "dividend_yield": 87.0,
+    "beta": 0.914,
+    "sector": "Technology",
+    "country": "United States",
+    "industry": "Software - Infrastructure"
+  },
+  {
+    "symbol": "GOOGL",
+    "name": "Alphabet Inc.",
+    "pe_ratio": 19.53607,
+    "roe": 32.908001999999996,
+    "market_cap": 1923557883904,
+    "dividend_yield": 51.0,
+    "beta": 1.025,
+    "sector": "Communication Services",
+    "country": "United States",
+    "industry": "Internet Content & Information"
+  },
+  {
+    "symbol": "AMZN",
+    "name": "Amazon.com, Inc.",
+    "pe_ratio": 34.687725,
+    "roe": 24.290001,
+    "market_cap": 2036559904768,
+    "dividend_yield": null,
+    "beta": 1.192,
+    "sector": "Consumer Cyclical",
+    "country": "United States",
+    "industry": "Internet Retail"
+  },
+  {
+    "symbol": "META",
+    "name": "Meta Platforms, Inc.",
+    "pe_ratio": 24.559933,
+    "roe": 37.140997999999996,
+    "market_cap": 1484724764672,
+    "dividend_yield": 36.0,
+    "beta": 1.231,
+    "sector": "Communication Services",
+    "country": "United States",
+    "industry": "Internet Content & Information"
+  },
+  {
+    "symbol": "TSLA",
+    "name": "Tesla, Inc.",
+    "pe_ratio": 130.9561,
+    "roe": 10.42,
+    "market_cap": 863506923520,
+    "dividend_yield": null,
+    "beta": 2.507,
+    "sector": "Consumer Cyclical",
+    "country": "United States",
+    "industry": "Auto Manufacturers"
+  },
+  {
+    "symbol": "NFLX",
+    "name": "Netflix, Inc.",
+    "pe_ratio": 46.722694,
+    "roe": 38.435,
+    "market_cap": 397121028096,
+    "dividend_yield": null,
+    "beta": 1.377,
+    "sector": "Communication Services",
+    "country": "United States",
+    "industry": "Entertainment"
+  },
+  {
+    "symbol": "NVDA",
+    "name": "NVIDIA Corporation",
+    "pe_ratio": 37.465984,
+    "roe": 119.17701000000001,
+    "market_cap": 2687659933696,
+    "dividend_yield": 4.0,
+    "beta": 1.765,
+    "sector": "Technology",
+    "country": "United States",
+    "industry": "Semiconductors"
+  },
+  {
+    "symbol": "JPM",
+    "name": "JP Morgan Chase & Co.",
+    "pe_ratio": 12.330972,
+    "roe": 17.386,
+    "market_cap": 681300197376,
+    "dividend_yield": 227.99999999999997,
+    "beta": 1.09,
+    "sector": "Financial Services",
+    "country": "United States",
+    "industry": "Banks - Diversified"
+  },
+  {
+    "symbol": "BHP",
+    "name": "BHP Group Limited",
+    "pe_ratio": 10.888392,
+    "roe": 27.693,
+    "market_cap": 123721687040,
+    "dividend_yield": 508.0,
+    "beta": 0.81,
+    "sector": "Basic Materials",
+    "country": "Australia",
+    "industry": "Other Industrial Metals & Mining"
+  }
+]
