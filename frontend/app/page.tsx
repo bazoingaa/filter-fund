@@ -3,57 +3,171 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 
-type FilterParams = {
-  pe_lt: string
-  roe_gt: string
+type Stock = {
+  symbol: string
+  name: string
+  pe_ratio: number | null
+  roe: number | null
+  market_cap: number | null
+  dividend_yield: number | null
+  beta: number | null
+  sector: string
+  country: string
+  industry: string
 }
 
 export default function Home() {
-  const [results, setResults] = useState<any[]>([])
-  const [filters, setFilters] = useState<FilterParams>({ pe_lt: '', roe_gt: '' })
+  const [filters, setFilters] = useState({
+    pe_min: '',
+    pe_max: '',
+    roe_min: '',
+    roe_max: '',
+    market_cap_min: '',
+    market_cap_max: '',
+    div_yield_min: '',
+    div_yield_max: '',
+    beta_min: '',
+    beta_max: '',
+    sector: '',
+    country: '',
+    industries: '' // comma-separated
+  })
 
-  const fetchStocks = async () => {
-    try {
-      const params: any = {}
-      if (filters.pe_lt.trim() !== '') params.pe_lt = parseFloat(filters.pe_lt)
-      if (filters.roe_gt.trim() !== '') params.roe_gt = parseFloat(filters.roe_gt)
-      const res = await axios.get(`http://localhost:8000/stocks`, { params })
-      setResults([res.data])
-    } catch (error) {
-      console.error('Failed to fetch stocks:', error)
-    }
+  const [results, setResults] = useState<Stock[]>([])
+  const [loading, setLoading] = useState(false)
+
+  const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters({ ...filters, [e.target.name]: e.target.value })
   }
 
+  const fetchStocks = async () => {
+    setLoading(true)
+    const params: any = {}
+  
+    for (const key in filters) {
+      const value = filters[key as keyof typeof filters]
+      if (value.trim() !== '') {
+        if (key === 'industries') {
+          const industryList = value.split(',').map(ind => ind.trim())
+          params['industries'] = industryList
+        } else {
+          params[key] = value
+        }
+      }
+    }
+  
+    try {
+      console.log('Requesting with params:', params) // 👈 LOG THIS
+      const res = await axios.get('http://localhost:8000/stocks', { params })
+      console.log('Response from backend:', res.data) // 👈 AND THIS
+      setResults(res.data)
+    } catch (err: any) {
+      console.error('Axios Error:', err)
+      alert(`Error: ${err?.message || 'Something went wrong'}`)
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+
   return (
-    <div className="p-6">
-      <h1 className="text-xl font-bold mb-4">Stock Screener</h1>
-      <div className="flex gap-4 mb-4">
-        <input
-          type="number"
-          placeholder="P/E <"
-          value={filters.pe_lt}
-          onChange={e => setFilters({ ...filters, pe_lt: e.target.value })}
-          className="border p-2"
-        />
-        <input
-          type="number"
-          placeholder="ROE >"
-          value={filters.roe_gt}
-          onChange={e => setFilters({ ...filters, roe_gt: e.target.value })}
-          className="border p-2"
-        />
-        <button
-          onClick={fetchStocks}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Search
-        </button>
-      </div>
-      <ul>
-        {results.map((res, idx) => (
-          <li key={idx}>{JSON.stringify(res)}</li>
+    <main className="p-6 max-w-screen-lg mx-auto">
+      <h1 className="text-2xl font-bold mb-6">Stock Screener</h1>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        {[
+          ['pe_min', 'P/E Min'],
+          ['pe_max', 'P/E Max'],
+          ['roe_min', 'ROE Min (%)'],
+          ['roe_max', 'ROE Max (%)'],
+          ['market_cap_min', 'Market Cap Min'],
+          ['market_cap_max', 'Market Cap Max'],
+          ['div_yield_min', 'Dividend Yield Min (%)'],
+          ['div_yield_max', 'Dividend Yield Max (%)'],
+          ['beta_min', 'Beta Min'],
+          ['beta_max', 'Beta Max']
+        ].map(([key, label]) => (
+          <input
+            key={key}
+            name={key}
+            placeholder={label}
+            value={filters[key as keyof typeof filters]}
+            onChange={handleInput}
+            type="number"
+            className="border p-2 rounded"
+          />
         ))}
-      </ul>
-    </div>
+
+        <input
+          name="sector"
+          placeholder="Sector (e.g. tech)"
+          value={filters.sector}
+          onChange={handleInput}
+          className="border p-2 rounded"
+        />
+        <input
+          name="country"
+          placeholder="Country (e.g. usa)"
+          value={filters.country}
+          onChange={handleInput}
+          className="border p-2 rounded"
+        />
+        <input
+          name="industries"
+          placeholder="Industries (comma separated)"
+          value={filters.industries}
+          onChange={handleInput}
+          className="border p-2 rounded col-span-2"
+        />
+      </div>
+
+      <button
+        onClick={fetchStocks}
+        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+      >
+        {loading ? 'Searching...' : 'Search'}
+      </button>
+
+      <div className="mt-6">
+        {results.length > 0 && (
+          <table className="w-full border mt-4 text-sm">
+            <thead className="bg-gray-100">
+              <tr>
+                <th className="p-2 border">Symbol</th>
+                <th className="p-2 border">Name</th>
+                <th className="p-2 border">P/E</th>
+                <th className="p-2 border">ROE</th>
+                <th className="p-2 border">Mkt Cap</th>
+                <th className="p-2 border">Div Yield</th>
+                <th className="p-2 border">Beta</th>
+                <th className="p-2 border">Sector</th>
+                <th className="p-2 border">Country</th>
+                <th className="p-2 border">Industry</th>
+              </tr>
+            </thead>
+            <tbody>
+              {results.map((stock, i) => (
+                <tr key={i} className="hover:bg-gray-50">
+                  <td className="p-2 border">{stock.symbol}</td>
+                  <td className="p-2 border">{stock.name}</td>
+                  <td className="p-2 border">{stock.pe_ratio ?? '—'}</td>
+                  <td className="p-2 border">{stock.roe ?? '—'}</td>
+                  <td className="p-2 border">{stock.market_cap?.toLocaleString() ?? '—'}</td>
+                  <td className="p-2 border">{stock.dividend_yield ?? '—'}</td>
+                  <td className="p-2 border">{stock.beta ?? '—'}</td>
+                  <td className="p-2 border">{stock.sector}</td>
+                  <td className="p-2 border">{stock.country}</td>
+                  <td className="p-2 border">{stock.industry}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+        {results.length === 0 && !loading && (
+          <p className="text-gray-500 mt-4">No results yet. Try adjusting your filters.</p>
+        )}
+      </div>
+    </main>
   )
 }
