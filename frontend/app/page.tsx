@@ -67,8 +67,7 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
-  }
-  
+  }  
 
   return (
     <main className="p-6 max-w-screen-lg mx-auto">
