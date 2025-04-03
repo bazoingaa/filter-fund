@@ -1,4 +1,4 @@
-# FilterFund - Scalable, Open Stock Screener
+# Scr33ner - Scalable, Open Stock Screener
 
 **FilterFund** is an advanced, open-source stock screener designed to help investors and analysts find fundamentally strong stocks using deep filters across 20,000+ global tickers.
 
