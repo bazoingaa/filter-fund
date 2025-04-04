@@ -26,7 +26,9 @@ def filter_stocks(
     beta_max: Optional[float] = Query(None),
     sector: Optional[str] = Query(None),
     country: Optional[str] = Query(None),
-    industries: Optional[List[str]] = Query(None)
+    industries: Optional[List[str]] = Query(None),
+    offset: int = Query(0),
+    limit: int = Query(20)
 ):
     if not os.path.exists(FUNDAMENTALS_DIR):
         return {"error": "Fundamentals directory not found."}
@@ -105,4 +107,5 @@ def filter_stocks(
             "country": stock.get("country")
         })
 
-    return results
+    # Apply pagination
+    return results[offset:offset + limit]

@@ -34,16 +34,17 @@ export default function Home() {
   })
 
   const [results, setResults] = useState<Stock[]>([])
+  const [offset, setOffset] = useState(0)
+  const [hasMore, setHasMore] = useState(false)
   const [loading, setLoading] = useState(false)
 
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilters({ ...filters, [e.target.name]: e.target.value })
   }
 
-  const fetchStocks = async () => {
-    setLoading(true)
+  const buildParams = () => {
     const params: any = {}
-  
+
     for (const key in filters) {
       const value = filters[key as keyof typeof filters]
       if (value.trim() !== '') {
@@ -55,19 +56,39 @@ export default function Home() {
         }
       }
     }
-  
+
+    return params
+  }
+
+  const fetchStocks = async (newSearch = false) => {
+    setLoading(true)
+    const currentOffset = newSearch ? 0 : offset
+    const params = { ...buildParams(), offset: currentOffset, limit: 20 }
+
     try {
-      console.log('Requesting with params:', params) // 👈 LOG THIS
       const res = await axios.get('http://localhost:8000/stocks', { params })
-      console.log('Response from backend:', res.data) // 👈 AND THIS
-      setResults(res.data)
+      const newData = res.data
+
+      if (newSearch) {
+        setResults(newData)
+      } else {
+        setResults(prev => [...prev, ...newData])
+      }
+
+      setOffset(currentOffset + 20)
+      setHasMore(newData.length === 20)
     } catch (err: any) {
       console.error('Axios Error:', err)
       alert(`Error: ${err?.message || 'Something went wrong'}`)
     } finally {
       setLoading(false)
     }
-  }  
+  }
+
+  const handleSearch = () => {
+    setOffset(0)
+    fetchStocks(true)
+  }
 
   return (
     <main className="p-6 max-w-screen-lg mx-auto">
@@ -121,7 +142,7 @@ export default function Home() {
       </div>
 
       <button
-        onClick={fetchStocks}
+        onClick={handleSearch}
         className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
         {loading ? 'Searching...' : 'Search'}
@@ -129,38 +150,51 @@ export default function Home() {
 
       <div className="mt-6">
         {results.length > 0 && (
-          <table className="w-full border mt-4 text-sm">
-            <thead className="bg-gray-100">
-              <tr>
-                <th className="p-2 border">Symbol</th>
-                <th className="p-2 border">Name</th>
-                <th className="p-2 border">P/E</th>
-                <th className="p-2 border">ROE</th>
-                <th className="p-2 border">Mkt Cap</th>
-                <th className="p-2 border">Div Yield</th>
-                <th className="p-2 border">Beta</th>
-                <th className="p-2 border">Sector</th>
-                <th className="p-2 border">Country</th>
-                <th className="p-2 border">Industry</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((stock, i) => (
-                <tr key={i} className="hover:bg-gray-50">
-                  <td className="p-2 border">{stock.symbol}</td>
-                  <td className="p-2 border">{stock.name}</td>
-                  <td className="p-2 border">{stock.pe_ratio ?? '—'}</td>
-                  <td className="p-2 border">{stock.roe ?? '—'}</td>
-                  <td className="p-2 border">{stock.market_cap?.toLocaleString() ?? '—'}</td>
-                  <td className="p-2 border">{stock.dividend_yield ?? '—'}</td>
-                  <td className="p-2 border">{stock.beta ?? '—'}</td>
-                  <td className="p-2 border">{stock.sector}</td>
-                  <td className="p-2 border">{stock.country}</td>
-                  <td className="p-2 border">{stock.industry}</td>
+          <>
+            <table className="w-full border mt-4 text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2 border">Symbol</th>
+                  <th className="p-2 border">Name</th>
+                  <th className="p-2 border">P/E</th>
+                  <th className="p-2 border">ROE</th>
+                  <th className="p-2 border">Mkt Cap</th>
+                  <th className="p-2 border">Div Yield</th>
+                  <th className="p-2 border">Beta</th>
+                  <th className="p-2 border">Sector</th>
+                  <th className="p-2 border">Country</th>
+                  <th className="p-2 border">Industry</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {results.map((stock, i) => (
+                  <tr key={i} className="hover:bg-gray-50">
+                    <td className="p-2 border">{stock.symbol}</td>
+                    <td className="p-2 border">{stock.name}</td>
+                    <td className="p-2 border">{stock.pe_ratio ?? '—'}</td>
+                    <td className="p-2 border">{stock.roe ?? '—'}</td>
+                    <td className="p-2 border">{stock.market_cap?.toLocaleString() ?? '—'}</td>
+                    <td className="p-2 border">{stock.dividend_yield ?? '—'}</td>
+                    <td className="p-2 border">{stock.beta ?? '—'}</td>
+                    <td className="p-2 border">{stock.sector}</td>
+                    <td className="p-2 border">{stock.country}</td>
+                    <td className="p-2 border">{stock.industry}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {hasMore && (
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => fetchStocks(false)}
+                  className="bg-gray-700 text-white px-4 py-2 rounded hover:bg-gray-800"
+                >
+                  {loading ? 'Loading...' : 'Load More'}
+                </button>
+              </div>
+            )}
+          </>
         )}
 
         {results.length === 0 && !loading && (
