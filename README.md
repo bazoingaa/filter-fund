@@ -1,6 +1,6 @@
 # Scr33ner - Scalable, Open Stock Screener
 
-**FilterFund** is an advanced, open-source stock screener designed to help investors and analysts find fundamentally strong stocks using deep filters across 20,000+ global tickers.
+Scr33ner is a basic, open-source stock screener designed to help investors and analysts find fundamentally strong stocks using deep filters across 20,000+ global tickers.
 
 This project uses a fast, modern stack:
 - FastAPI backend with cached fundamentals via `yfinance`
